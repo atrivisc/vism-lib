@@ -16,12 +16,12 @@ from sqlalchemy.orm import (
     Session
 )
 from sqlalchemy.engine import URL, create_engine
-from lib.config import shared_logger, DatabaseConfig
+from vism_lib.config import shared_logger, DatabaseConfig
 from sqlalchemy.exc import OperationalError, StatementError
 from sqlalchemy.orm.query import Query as _Query
 
-from lib.data.validation import DataValidation
-from lib.errors import VismDatabaseException
+from vism_lib.data.validation import DataValidation
+from vism_lib.errors import VismDatabaseException
 
 
 class Base(MappedAsDataclass, DeclarativeBase):

@@ -3,8 +3,8 @@ import hashlib
 import hmac
 from dataclasses import dataclass
 from yaml_dataclass import YamlConfigCached
-from lib.config import shared_logger
-from lib.errors import VismException
+from vism_lib.config import shared_logger
+from vism_lib.errors import VismException
 
 
 class DataError(VismException):

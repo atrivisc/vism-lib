@@ -1,7 +1,7 @@
 from typing import Optional, Dict, Any, Union
 import aioboto3
-from lib.config import S3Config
-from lib.config import shared_logger
+from vism_lib.config import S3Config
+from vism_lib.config import shared_logger
 
 class AsyncS3Client:
     def __init__(self, config: S3Config) -> None:

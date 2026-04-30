@@ -4,10 +4,10 @@ import asyncio
 
 from yaml_dataclass import YamlConfigCached
 
-from lib.config import shared_logger, DataExchange
-from lib.database import VismDatabase
-from lib.logs import setup_logger, SensitiveDataFilter
-from lib.s3 import AsyncS3Client
+from vism_lib.config import shared_logger, DataExchange
+from vism_lib.database import VismDatabase
+from vism_lib.logs import setup_logger, SensitiveDataFilter
+from vism_lib.s3 import AsyncS3Client
 
 
 class Controller:

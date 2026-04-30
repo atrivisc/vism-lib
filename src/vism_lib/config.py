@@ -6,7 +6,7 @@ from pydantic import field_validator
 from pydantic.dataclasses import dataclass
 from yaml_dataclass import YamlConfigCached
 
-from lib.logs import LoggingConfig
+from vism_lib.logs import LoggingConfig
 
 shared_logger = logging.getLogger("vism_shared")
 

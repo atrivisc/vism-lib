@@ -1,7 +1,7 @@
 """Data vault storage module."""
 from abc import abstractmethod, ABCMeta
 from pydantic.dataclasses import dataclass
-from lib.config import Config
+from vism_lib.config import Config
 
 
 @dataclass
