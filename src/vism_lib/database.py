@@ -31,7 +31,7 @@ class Base(MappedAsDataclass, DeclarativeBase):
         Uuid, primary_key=True, default=uuid4, init=False
     )
     signature: Mapped[str] = mapped_column(
-        String, nullable=True, default=None, init=False
+        String(256), nullable=True, default=None, init=False
     )
 
     created_at: Mapped[datetime] = mapped_column(
