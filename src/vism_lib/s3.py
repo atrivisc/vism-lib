@@ -13,6 +13,23 @@ class AsyncS3Client:
         )
         self._endpoint = config.endpoint
 
+    async def create_bucket(self):
+        async with self._session.client("s3", endpoint_url=self._endpoint) as s3:
+            try:
+                await s3.head_bucket(Bucket=self.bucket_name)
+                shared_logger.debug(f"Bucket '{self.bucket_name}' already exists")
+            except Exception as e:
+                status = (
+                    getattr(e, "response", {})
+                    .get("ResponseMetadata", {})
+                    .get("HTTPStatusCode")
+                )
+                if status != 404:
+                    raise
+
+                await s3.create_bucket(Bucket=self.bucket_name)
+                shared_logger.info(f"Bucket '{self.bucket_name}' created")
+
     async def list_files(self, prefix: str) -> list[str]:
         """
         List files directly under the given prefix (non-recursive).
