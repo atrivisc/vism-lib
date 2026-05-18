@@ -2,6 +2,7 @@ from typing import Optional, Dict, Any, Union
 import aioboto3
 from vism_lib.config import S3Config
 from vism_lib.config import shared_logger
+from botocore.exceptions import ClientError
 
 class AsyncS3Client:
     def __init__(self, config: S3Config) -> None:
@@ -18,25 +19,19 @@ class AsyncS3Client:
             try:
                 await s3.head_bucket(Bucket=self.bucket_name)
                 shared_logger.debug(f"Bucket '{self.bucket_name}' already exists")
-            except Exception as e:
-                status = (
-                    getattr(e, "response", {})
-                    .get("ResponseMetadata", {})
-                    .get("HTTPStatusCode")
-                )
-                if status != 404:
+            except ClientError as e:
+                if e.response["Error"]["Code"] not in ["404", 404]:
                     raise
 
-                await s3.create_bucket(Bucket=self.bucket_name)
-                shared_logger.info(f"Bucket '{self.bucket_name}' created")
-
+                try:
+                    await s3.create_bucket(Bucket=self.bucket_name)
+                    shared_logger.info(f"Bucket '{self.bucket_name}' created")
+                    return True
+                except Exception as e:
+                    shared_logger.error(f"create_bucket failed | response={getattr(e, 'response', None)} | {e}")
+                    raise
+                
     async def list_files(self, prefix: str) -> list[str]:
-        """
-        List files directly under the given prefix (non-recursive).
-        Returns only objects, not "directories".
-
-        :param prefix: e.g. "folder/" or "" for root.
-        """
         async with self._session.client("s3", endpoint_url=self._endpoint) as s3:
             paginator = s3.get_paginator("list_objects_v2")
 
