@@ -1,3 +1,5 @@
+import base64
+import hashlib
 from typing import Optional, Dict, Any, Union
 import aioboto3
 from vism_lib.config import S3Config
@@ -30,7 +32,7 @@ class AsyncS3Client:
                 except Exception as e:
                     shared_logger.error(f"create_bucket failed | response={getattr(e, 'response', None)} | {e}")
                     raise
-                
+
     async def list_files(self, prefix: str) -> list[str]:
         async with self._session.client("s3", endpoint_url=self._endpoint) as s3:
             paginator = s3.get_paginator("list_objects_v2")
@@ -64,6 +66,8 @@ class AsyncS3Client:
                 Bucket=self.bucket_name,
                 Key=key,
                 Body=data,
+                ChecksumAlgorithm="SHA256",
+                ChecksumSHA256=base64.b64encode(hashlib.sha256(data).digest()).decode(),
                 **extra_args,
             )
 
