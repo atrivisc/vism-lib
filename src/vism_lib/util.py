@@ -2,8 +2,6 @@
 import ipaddress
 import base64
 
-from starlette.requests import Request
-
 def is_valid_ip(ip_str):
     """Check if a string is a valid IP address."""
     try:
@@ -47,7 +45,7 @@ def snake_to_camel(name):
     return split[0] + ''.join(word.capitalize() for word in split[1:])
 
 
-def absolute_url(request: Request, path: str) -> str:
+def absolute_url(request, path: str) -> str:
     """Build absolute URL from request and path."""
     scheme = request.url.scheme
     if request.headers.get("X-Forwarded-Proto"):
@@ -60,7 +58,7 @@ def absolute_url(request: Request, path: str) -> str:
     return f"{base}{path}"
 
 
-def get_client_ip(request: Request):
+def get_client_ip(request):
     """Get client IP address from request, respecting X-Forwarded-For."""
     x_forwarded_for = request.headers.get("X-Forwarded-For")
     if x_forwarded_for:
