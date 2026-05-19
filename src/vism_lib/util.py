@@ -2,7 +2,6 @@
 import ipaddress
 import base64
 
-import pkcs11
 from starlette.requests import Request
 
 def is_valid_ip(ip_str):

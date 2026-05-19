@@ -1,11 +1,11 @@
 """Data vault storage module."""
 from abc import abstractmethod, ABCMeta
 from pydantic.dataclasses import dataclass
-from vism_lib.config import Config
+from yaml_dataclass import YamlConfigCached
 
 
 @dataclass
-class VaultConfig(Config):
+class VaultConfig(YamlConfigCached):
     """Base class for vault module configuration."""
 
 
@@ -14,7 +14,7 @@ class Vault(metaclass=ABCMeta):
     configClass = VaultConfig
 
     def __init__(self):
-        self.config = self.configClass.load()
+        self.config = self.configClass.read_config()
 
     @abstractmethod
     def get_secret(self, secret_path: str) -> str:

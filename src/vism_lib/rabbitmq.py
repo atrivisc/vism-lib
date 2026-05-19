@@ -1,8 +1,6 @@
-import asyncio
 import logging
-from datetime import datetime
 import aio_pika
-from aio_pika.abc import AbstractRobustConnection, AbstractRobustChannel
+from aio_pika.abc import AbstractRobustConnection
 from aiormq import AMQPConnectionError
 from vism_lib.errors import VismException
 

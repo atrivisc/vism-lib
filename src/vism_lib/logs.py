@@ -6,7 +6,6 @@ import re
 import sys
 import logging.config
 from dataclasses import dataclass
-from typing import ClassVar
 
 
 @dataclass
