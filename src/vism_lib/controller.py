@@ -128,8 +128,10 @@ class Controller:
                     won = await self.try_become_leader()
                     if not won:
                         await self.follower_heartbeat()
-                        await leader_callback
+                        await follower_callback
                         await asyncio.sleep(self.RETRY_INTERVAL)
+                    else:
+                        await leader_callback
                 else:
                     if self._rabbitmq_channel and self._rabbitmq_channel.is_closed:
                         shared_logger.warning("Lost leader channel — re-entering election")
@@ -137,7 +139,6 @@ class Controller:
                         continue
 
                     await self.leader_heartbeat()
-                    await follower_callback
                     await asyncio.sleep(self.HEARTBEAT_INTERVAL)
         except Exception as e:
             shared_logger.error(f"Stopping rabbitmq leadership loop: {e}")
