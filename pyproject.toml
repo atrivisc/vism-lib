@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vism_lib"
-version = "0.1.13"
+version = "0.1.14"
 authors = [
   { name="atrivisc", email="atrivisc.shawl130@passmail.com" },
 ]
@@ -19,7 +19,7 @@ dependencies = [
     "pydantic==2.13.4",
     "PyMySQL==1.2.0",
     "aio_pika==9.6.2",
-    "botocore==1.43.10",
+    "botocore==1.40.61",
     "aioboto3==15.5.0",
     "sqlalchemy==2.0.49"
 ]
