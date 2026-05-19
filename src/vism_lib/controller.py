@@ -2,7 +2,7 @@
 
 import asyncio
 from datetime import datetime
-from typing import Coroutine
+from typing import Awaitable, Callable, Coroutine, Any
 
 import aio_pika
 from aio_pika.abc import AbstractRobustChannel, AbstractRobustConnection
@@ -13,6 +13,7 @@ from vism_lib.logs import setup_logger, SensitiveDataFilter
 from vism_lib.rabbitmq import RabbitMQClient
 from vism_lib.s3 import AsyncS3Client
 
+type AsyncCallable = Callable[[], Awaitable]
 
 class Controller:
     """Base controller class for managing modules and configuration."""
@@ -109,7 +110,7 @@ class Controller:
     async def _on_leader_message(self, _) -> None:
         pass # we don't care about messages here
 
-    async def resign(self, resign_callback: Coroutine = None) -> None:
+    async def resign(self, resign_callback: AsyncCallable = None) -> None:
         if self.is_leader:
             shared_logger.info("Resigning as leader.")
             self.is_leader = False
@@ -119,19 +120,19 @@ class Controller:
         if not self._rabbitmq_connection.is_closed:
             await self._rabbitmq_connection.close()
 
-        await resign_callback
+        await resign_callback()
 
-    async def elect_leader_loop(self, resign_callback: Coroutine = None, leader_callback: Coroutine = None, follower_callback: Coroutine = None) -> None:
+    async def elect_leader_loop(self, resign_callback: AsyncCallable = None, leader_callback: AsyncCallable = None, follower_callback: AsyncCallable = None) -> None:
         try:
             while not self._shutdown_event.is_set():
                 if not self.is_leader:
                     won = await self.try_become_leader()
                     if not won:
                         await self.follower_heartbeat()
-                        await follower_callback
+                        await follower_callback()
                         await asyncio.sleep(self.RETRY_INTERVAL)
                     else:
-                        await leader_callback
+                        await leader_callback()
                 else:
                     if self._rabbitmq_channel and self._rabbitmq_channel.is_closed:
                         shared_logger.warning("Lost leader channel — re-entering election")
