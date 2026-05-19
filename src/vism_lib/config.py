@@ -62,10 +62,24 @@ class S3Config:
     secret_key: str
     region: str = ""
 
+
+@dataclass
+class RabbitMQConfig:
+    """Configuration for RabbitMQ."""
+
+    leader_queue: str
+    host: str
+    user: str
+    password: str
+    vhost: str
+    port: int = 5672
+
+
 @dataclass
 class VismConfig(YamlConfigCached):
     """Base configuration class for VISM components."""
 
+    rabbitmq: RabbitMQConfig = None
     security: Security = field(default_factory=Security)
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     database: DatabaseConfig = None
