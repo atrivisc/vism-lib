@@ -3,11 +3,15 @@
 import json
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
+from typing import Callable, Awaitable
 
 from yaml_dataclass import YamlConfigCached
 
 from vism_lib.config import shared_logger
 from vism_lib.data.validation import DataValidation
+
+type AsyncCallableExchangeCSR = Callable[[DataExchangeCSRMessage], Awaitable]
+type AsyncCallableExchangeCert = Callable[[DataExchangeCertMessage], Awaitable]
 
 
 @dataclass
@@ -54,7 +58,6 @@ class DataExchangeCertMessage(DataExchangeMessage):
     order_id: str
     ca_name: str
     days: int
-    original_signature: str
 
     def to_json(self) -> str:
         """Convert certificate message to JSON string."""
@@ -63,7 +66,6 @@ class DataExchangeCertMessage(DataExchangeMessage):
             "order_id": self.order_id,
             "ca_name": self.ca_name,
             "days": self.days,
-            "original_signature": self.original_signature,
         })
 
 
@@ -85,21 +87,21 @@ class DataExchange(metaclass=ABCMeta):
         """Clean up resources used by the data exchange module."""
 
     @abstractmethod
-    async def send_csr(self, message: DataExchangeCSRMessage):
+    async def send_csr(self, message: DataExchangeCSRMessage) -> None:
         """Send a CSR message to the CA."""
         raise NotImplementedError()
 
     @abstractmethod
-    async def send_cert(self, message: DataExchangeCertMessage):
+    async def send_cert(self, message: DataExchangeCertMessage) -> None:
         """Send certificate data."""
         raise NotImplementedError()
 
     @abstractmethod
-    async def receive_csr(self) -> None:
+    async def receive_csr(self, *, retry_count: int = 0, callback: AsyncCallableExchangeCSR) -> None:
         """Receive CSR data from clients."""
         raise NotImplementedError()
 
     @abstractmethod
-    async def receive_cert(self) -> None:
+    async def receive_cert(self, *, retry_count: int = 0, callback: AsyncCallableExchangeCert) -> None:
         """Receive certificate data from CA."""
         raise NotImplementedError()
